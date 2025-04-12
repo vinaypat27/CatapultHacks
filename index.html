@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Analyzer with AI Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            gap: 20px;
+            height: 80vh;
+        }
+
+        .upload-container {
+            flex: 2;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            max-height: 100%;
+            overflow-y: auto;
+        }
+
+        .ai-container {
+            flex: 1;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            max-width: 400px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+
+        .upload-area {
+            border: 2px dashed #3498db;
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover {
+            background: #edf2f7;
+            border-color: #2980b9;
+        }
+
+        .upload-area.dragover {
+            background: #e3f2fd;
+            border-color: #1565c0;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .file-list {
+            margin-top: 20px;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .file-name {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+
+        .remove-file {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        .analyze-btn {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            transition: background 0.3s ease;
+            margin-top: auto;
+        }
+
+        .analyze-btn:hover {
+            background: #27ae60;
+        }
+
+        .analyze-btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        .chat-area {
+            flex-grow: 1;
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+
+        .ai-message {
+            background: #e3f2fd;
+            align-self: flex-start;
+        }
+
+        .user-message {
+            background: #e8f5e9;
+            align-self: flex-end;
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex-grow: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .send-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 1024px) {
+            .main-container {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .upload-container, .ai-container {
+                width: 100%;
+                max-height: none;
+            }
+
+            .ai-container {
+                height: 500px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="upload-container">
+            <h1>Document Upload</h1>
+            <div class="upload-area" id="drop-zone">
+                <div class="upload-icon">📄</div>
+                <p class="upload-text">Drag and drop your documents here</p>
+                <p class="upload-text">or</p>
+                <input type="file" id="file-input" multiple accept=".pdf,.doc,.docx,.txt">
+                <button onclick="document.getElementById('file-input').click()" style="padding: 8px 16px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    Choose Files
+                </button>
+            </div>
+            <div class="file-list" id="file-list"></div>
+            <button class="analyze-btn" id="analyze-btn" disabled>Analyze Documents</button>
+        </div>
+
+        <div class="ai-container">
+            <h1>AI Assistant</h1>
+            <div class="chat-area" id="chat-area">
+                <div class="message ai-message">
+                    Hello! I'm your AI assistant. Upload your documents and I'll help you analyze them.
+                </div>
+            </div>
+            <div class="chat-input-container">
+                <input type="text" class="chat-input" id="chat-input" placeholder="Type your message here...">
+                <button class="send-btn" id="send-btn">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check authentication
+        const currentUser = localStorage.getItem('currentUser');
+        if (!currentUser) {
+            window.location.href = 'login.html';
+        }
+
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const fileList = document.getElementById('file-list');
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const chatArea = document.getElementById('chat-area');
+        const chatInput = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+        let files = [];
+
+        // Load user's previous files if any
+        const savedFiles = JSON.parse(localStorage.getItem(`files_${currentUser}`)) || [];
+        if (savedFiles.length > 0) {
+            // We can only store file metadata, not the actual files
+            savedFiles.forEach(fileData => {
+                addMessage(`Previously uploaded: ${fileData.name}`, true);
+            });
+        }
+
+        // Add logout button
+        const logoutBtn = document.createElement('button');
+        logoutBtn.textContent = 'Logout';
+        logoutBtn.style.cssText = 'position: absolute; top: 20px; right: 20px; padding: 8px 16px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer;';
+        document.body.appendChild(logoutBtn);
+
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        });
+
+        // Prevent default drag behaviors
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+
+        // Highlight drop zone when dragging over it
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+
+        // Handle dropped files
+        dropZone.addEventListener('drop', handleDrop, false);
+        fileInput.addEventListener('change', handleFileSelect, false);
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        function highlight(e) {
+            dropZone.classList.add('dragover');
+        }
+
+        function unhighlight(e) {
+            dropZone.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const newFiles = [...dt.files];
+            handleFiles(newFiles);
+        }
+
+        function handleFileSelect(e) {
+            const newFiles = [...e.target.files];
+            handleFiles(newFiles);
+        }
+
+        function handleFiles(newFiles) {
+            files = [...files, ...newFiles];
+            updateFileList();
+            analyzeBtn.disabled = files.length === 0;
+            
+            // Save file metadata to localStorage
+            const fileMetadata = files.map(file => ({
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                lastModified: file.lastModified
+            }));
+            localStorage.setItem(`files_${currentUser}`, JSON.stringify(fileMetadata));
+        }
+
+        function removeFile(index) {
+            files.splice(index, 1);
+            updateFileList();
+            analyzeBtn.disabled = files.length === 0;
+        }
+
+        function updateFileList() {
+            fileList.innerHTML = '';
+            files.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <span class="file-name">${file.name}</span>
+                    <button class="remove-file" onclick="removeFile(${index})">Remove</button>
+                `;
+                fileList.appendChild(fileItem);
+            });
+        }
+
+        function addMessage(message, isAi = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isAi ? 'ai-message' : 'user-message'}`;
+            messageDiv.textContent = message;
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+
+            // Save chat history
+            const chatHistory = JSON.parse(localStorage.getItem(`chat_${currentUser}`)) || [];
+            chatHistory.push({ message, isAi });
+            localStorage.setItem(`chat_${currentUser}`, JSON.stringify(chatHistory));
+        }
+
+        analyzeBtn.addEventListener('click', () => {
+            addMessage('Analyzing documents...', true);
+            // Here you would typically send the files to your backend
+            console.log('Analyzing files:', files);
+        });
+
+        sendBtn.addEventListener('click', () => {
+            const message = chatInput.value.trim();
+            if (message) {
+                addMessage(message);
+                chatInput.value = '';
+                setTimeout(() => {
+                    addMessage('I received your message. How can I help you analyze these documents?', true);
+                }, 1000);
+            }
+        });
+
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>
