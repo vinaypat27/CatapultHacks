@@ -9,30 +9,30 @@ from tensorflow.keras.preprocessing.image import load_img, img_to_array
 from sklearn.model_selection import train_test_split
 
 # File paths
-train_csv = '/Users/parthranade/Documents/Hackathon/sign_data/train/train_data.csv'
-test_csv = '/Users/parthranade/Documents/Hackathon/sign_data/test_data/test_data.csv'
-base_train_path = '/Users/parthranade/Documents/Hackathon/sign_data/train'
-base_test_path = '/Users/parthranade/Documents/Hackathon/sign_data/test_data'
+train_csv = '/Users/parthranade/Documents/Hackathon/sign_data/train_data.csv'
+test_csv = '/Users/parthranade/Documents/Hackathon/sign_data/test_data.csv'
+train_base_path = '/Users/parthranade/Documents/Hackathon/sign_data/train'
+test_base_path = '/Users/parthranade/Documents/Hackathon/sign_data/test'
 img_size = (150, 150)
 
 # Function to preprocess and load image
-def preprocess_image(path, base_path):
-    full_path = os.path.join(base_path, path)
+def preprocess_image(relative_path, base_path):
+    full_path = os.path.join(base_path, relative_path)
     img = load_img(full_path, target_size=img_size, color_mode='grayscale')
     img = img_to_array(img) / 255.0
     return img
 
 # Load pairs from a CSV file
 def load_image_pairs(csv_path, base_path):
-    df = pd.read_csv(csv_path, sep="\t", header=None, names=["img1", "img2", "label"])
+    df = pd.read_csv(csv_path, header=None, names=["img1", "img2", "label"])
     img1_list = np.array([preprocess_image(row["img1"], base_path) for _, row in df.iterrows()])
     img2_list = np.array([preprocess_image(row["img2"], base_path) for _, row in df.iterrows()])
     labels = df["label"].values.astype(np.float32)
     return img1_list, img2_list, labels
 
 # Load train and test data
-X1_train, X2_train, y_train = load_image_pairs(train_csv, base_train_path)
-X1_test, X2_test, y_test = load_image_pairs(test_csv, base_test_path)
+X1_train, X2_train, y_train = load_image_pairs(train_csv, train_base_path)
+X1_test, X2_test, y_test = load_image_pairs(test_csv, test_base_path)
 
 # Split some of train for validation
 X1_train, X1_val, X2_train, X2_val, y_train, y_val = train_test_split(
@@ -72,4 +72,4 @@ model.fit([X1_train, X2_train], y_train,
 
 # Evaluate on test set
 test_loss, test_acc = model.evaluate([X1_test, X2_test], y_test)
-print(f"\n✅ Test Accuracy: {test_acc:.4f}")
+print(f"\nTest Accuracy: {test_acc:.4f}")
