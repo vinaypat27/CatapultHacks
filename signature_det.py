@@ -9,11 +9,11 @@ from tensorflow.keras.preprocessing.image import load_img, img_to_array
 from sklearn.model_selection import train_test_split
 
 # File paths
-train_csv = '/Users/parthranade/Documents/Hackathon/sign_data/train_data.csv'
-test_csv = '/Users/parthranade/Documents/Hackathon/sign_data/test_data.csv'
-train_base_path = '/Users/parthranade/Documents/Hackathon/sign_data/train'
-test_base_path = '/Users/parthranade/Documents/Hackathon/sign_data/test'
-img_size = (150, 150)
+train_csv = '/Users/parthranade/Documents/Hackathon/CatapultHacks/sign_data/train_data.csv'
+test_csv = '/Users/parthranade/Documents/Hackathon/CatapultHacks/sign_data/test_data.csv'
+train_base_path = '/Users/parthranade/Documents/Hackathon/CatapultHacks/sign_data/train'
+test_base_path = '/Users/parthranade/Documents/Hackathon/CatapultHacks/sign_data/test'
+img_size = (150, 150) 
 
 # Function to preprocess and load image
 def preprocess_image(relative_path, base_path):
