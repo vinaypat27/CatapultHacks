@@ -169,9 +169,6 @@
     </div>
 
     <script>
-        // Get existing users or initialize empty array
-        let users = JSON.parse(localStorage.getItem('users')) || [];
-
         // Add real-time password matching
         const password = document.querySelector('#password');
         const confirmPassword = document.querySelector('#confirmPassword');
@@ -202,56 +199,43 @@
             const confirmPassword = document.querySelector('#confirmPassword').value;
             const errorMessage = document.querySelector('#error-message');
 
-            // Validate email format
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                errorMessage.textContent = 'Please enter a valid email address';
-                errorMessage.style.display = 'block';
-                return false;
-            }
-
-            // Check if user already exists
-            if (users.some(user => user.email === email)) {
-                errorMessage.textContent = 'Email already registered';
-                errorMessage.style.display = 'block';
-                return false;
-            }
-
-            // Validate password
+            // Validate passwords match
             if (password !== confirmPassword) {
                 errorMessage.textContent = 'Passwords do not match';
                 errorMessage.style.display = 'block';
                 return false;
             }
 
-            // Password strength validation
-            const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
-            if (!passwordRegex.test(password)) {
-                errorMessage.textContent = 'Password does not meet requirements';
-                errorMessage.style.display = 'block';
-                return false;
-            }
-
-            // Create new user
-            const newUser = {
-                firstName,
-                lastName,
-                email,
-                password,
-                createdAt: new Date().toISOString(),
-                settings: {
-                    theme: 'light',
-                    notifications: true
+            // Register user
+            fetch('http://localhost:5001/api/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    firstName,
+                    lastName,
+                    email,
+                    password
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.token) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    window.location.href = 'documents.html';
+                } else {
+                    errorMessage.textContent = data.message || 'Registration failed';
+                    errorMessage.style.display = 'block';
                 }
-            };
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                errorMessage.textContent = 'An error occurred. Please try again.';
+                errorMessage.style.display = 'block';
+            });
 
-            // Add user to array and save
-            users.push(newUser);
-            localStorage.setItem('users', JSON.stringify(users));
-            localStorage.setItem('currentUser', email);
-
-            // Redirect to main page
-            window.location.href = 'index.html';
             return false;
         }
     </script>

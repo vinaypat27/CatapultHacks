@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document Analyzer with AI Assistant</title>
+    <title>Document Analysis - Document Analyzer</title>
+    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -15,347 +16,332 @@
         body {
             background-color: #f5f5f5;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             padding: 20px;
+        }
+
+        .navbar {
+            background: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-radius: 8px;
         }
 
         .main-container {
-            width: 100%;
-            max-width: 1200px;
-            display: flex;
-            gap: 20px;
-            height: 80vh;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+            height: calc(100vh - 100px);
         }
 
-        .upload-container {
-            flex: 2;
+        .document-section {
             background: white;
             padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            max-height: 100%;
-            overflow-y: auto;
-        }
-
-        .ai-container {
-            flex: 1;
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            max-width: 400px;
-        }
-
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-            text-align: center;
-            font-size: 1.5rem;
-        }
-
-        .upload-area {
-            border: 2px dashed #3498db;
             border-radius: 8px;
-            padding: 40px 20px;
-            text-align: center;
-            background: #f8fafc;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
         }
 
-        .upload-area:hover {
-            background: #edf2f7;
-            border-color: #2980b9;
-        }
-
-        .upload-area.dragover {
-            background: #e3f2fd;
-            border-color: #1565c0;
-        }
-
-        .upload-icon {
-            font-size: 48px;
-            color: #3498db;
+        .document-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
             margin-bottom: 15px;
         }
 
-        .upload-text {
-            color: #666;
-            margin-bottom: 10px;
+        .document-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #333;
         }
 
-        .file-list {
-            margin-top: 20px;
-            flex-grow: 1;
+        .document-info {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .document-content {
+            flex: 1;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+        }
+
+        .document-text {
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .pdf-viewer {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        #pdf-container {
+            width: 100%;
+            height: 100%;
             overflow-y: auto;
         }
 
-        .file-item {
+        .pdf-page {
+            margin: 10px auto;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             display: flex;
-            align-items: center;
-            padding: 10px;
-            background: #f8fafc;
-            border-radius: 6px;
-            margin-bottom: 10px;
+            flex-direction: column;
+            height: 100%;
         }
 
-        .file-name {
-            flex-grow: 1;
-            margin-right: 10px;
-        }
-
-        .remove-file {
-            background: #e74c3c;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        #file-input {
-            display: none;
-        }
-
-        .analyze-btn {
-            background: #2ecc71;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 16px;
-            transition: background 0.3s ease;
-            margin-top: auto;
-        }
-
-        .analyze-btn:hover {
-            background: #27ae60;
-        }
-
-        .analyze-btn:disabled {
-            background: #95a5a6;
-            cursor: not-allowed;
+        .chat-header {
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 15px;
         }
 
         .chat-area {
             flex-grow: 1;
-            background: #f8fafc;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
             overflow-y: auto;
+            padding: 10px;
             display: flex;
             flex-direction: column;
+            gap: 10px;
         }
 
         .message {
-            margin-bottom: 15px;
             padding: 10px 15px;
             border-radius: 8px;
             max-width: 80%;
-        }
-
-        .ai-message {
-            background: #e3f2fd;
-            align-self: flex-start;
+            word-wrap: break-word;
         }
 
         .user-message {
-            background: #e8f5e9;
+            background: #007bff;
+            color: white;
             align-self: flex-end;
+        }
+
+        .ai-message {
+            background: #f0f0f0;
+            color: #333;
+            align-self: flex-start;
         }
 
         .chat-input-container {
             display: flex;
             gap: 10px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            margin-top: auto;
         }
 
         .chat-input {
             flex-grow: 1;
-            padding: 12px;
+            padding: 10px;
             border: 1px solid #ddd;
-            border-radius: 6px;
+            border-radius: 4px;
             font-size: 14px;
         }
 
         .send-btn {
-            background: #3498db;
+            background: #28a745;
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
+            padding: 10px 20px;
+            border-radius: 4px;
             cursor: pointer;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .error-message {
+            color: #dc3545;
+            padding: 10px;
+            text-align: center;
+            display: none;
         }
 
         @media (max-width: 1024px) {
             .main-container {
-                flex-direction: column;
-                height: auto;
+                grid-template-columns: 1fr;
             }
 
-            .upload-container, .ai-container {
-                width: 100%;
-                max-height: none;
-            }
-
-            .ai-container {
+            .chat-section {
                 height: 500px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="main-container">
-        <div class="upload-container">
-            <h1>Document Upload</h1>
-            <div class="upload-area" id="drop-zone">
-                <div class="upload-icon">📄</div>
-                <p class="upload-text">Drag and drop your documents here</p>
-                <p class="upload-text">or</p>
-                <input type="file" id="file-input" multiple accept=".pdf,.doc,.docx,.txt">
-                <button onclick="document.getElementById('file-input').click()" style="padding: 8px 16px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                    Choose Files
-                </button>
-            </div>
-            <div class="file-list" id="file-list"></div>
-            <button class="analyze-btn" id="analyze-btn" disabled>Analyze Documents</button>
+    <div class="navbar">
+        <div class="user-info">
+            <h2>Document Analysis</h2>
         </div>
+        <div class="nav-links">
+            <a href="documents.html">My Documents</a>
+            <button class="logout-btn" onclick="handleLogout()">Logout</button>
+        </div>
+    </div>
 
-        <div class="ai-container">
-            <h1>AI Assistant</h1>
-            <div class="chat-area" id="chat-area">
-                <div class="message ai-message">
-                    Hello! I'm your AI assistant. Upload your documents and I'll help you analyze them.
+    <div class="main-container">
+        <div class="document-section">
+            <div class="document-header">
+                <div>
+                    <h2 id="document-title">Loading document...</h2>
+                    <div id="document-info" class="document-info"></div>
                 </div>
             </div>
+            <div id="document-content" class="document-content">
+                <div class="loading">Loading document content...</div>
+            </div>
+        </div>
+
+        <div class="chat-section">
+            <div class="chat-header">
+                <h3>AI Assistant</h3>
+                <p>Ask questions about your document</p>
+            </div>
+            <div id="chat-area" class="chat-area">
+                <div class="ai-message">Hello! I'm your AI assistant. Once the document loads, I can help you analyze and understand it. What would you like to know?</div>
+            </div>
             <div class="chat-input-container">
-                <input type="text" class="chat-input" id="chat-input" placeholder="Type your message here...">
-                <button class="send-btn" id="send-btn">Send</button>
+                <input type="text" id="chat-input" class="chat-input" placeholder="Type your message...">
+                <button id="send-btn" class="send-btn">Send</button>
             </div>
         </div>
     </div>
 
     <script>
+        // Initialize PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+
+        // Initialize variables
+        let currentDocument = null;
+
         // Check authentication
-        const currentUser = localStorage.getItem('currentUser');
-        if (!currentUser) {
+        const token = localStorage.getItem('token');
+        if (!token) {
             window.location.href = 'login.html';
         }
 
-        const dropZone = document.getElementById('drop-zone');
-        const fileInput = document.getElementById('file-input');
-        const fileList = document.getElementById('file-list');
-        const analyzeBtn = document.getElementById('analyze-btn');
+        // Get document ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const documentId = urlParams.get('document');
+
+        if (!documentId) {
+            window.location.href = 'documents.html';
+        }
+
+        async function renderPdf(pdfData) {
+            const container = document.getElementById('document-content');
+            container.innerHTML = '<div id="pdf-container"></div>';
+            const pdfContainer = document.getElementById('pdf-container');
+
+            try {
+                const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+                const numPages = pdf.numPages;
+
+                for (let pageNum = 1; pageNum <= numPages; pageNum++) {
+                    const page = await pdf.getPage(pageNum);
+                    const scale = 1.5;
+                    const viewport = page.getViewport({ scale });
+
+                    const canvas = document.createElement('canvas');
+                    canvas.className = 'pdf-page';
+                    canvas.style.width = '100%';
+                    canvas.style.height = 'auto';
+                    pdfContainer.appendChild(canvas);
+
+                    const context = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+
+                    await page.render({
+                        canvasContext: context,
+                        viewport: viewport
+                    }).promise;
+                }
+            } catch (error) {
+                console.error('Error rendering PDF:', error);
+                container.innerHTML = '<div class="error-message">Error rendering PDF. Please try again.</div>';
+            }
+        }
+
+        // Load document content
+        fetch(`http://localhost:5001/api/documents/${documentId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Document not found');
+            }
+            return response.json();
+        })
+        .then(async document => {
+            currentDocument = document;
+            document.getElementById('document-title').textContent = document.fileName;
+            document.getElementById('document-info').textContent = 
+                `${formatFileSize(document.fileSize)} • ${document.fileType} • Uploaded ${new Date(document._id.substring(0, 8)).toLocaleDateString()}`;
+
+            const container = document.getElementById('document-content');
+            
+            if (document.fileType === 'application/pdf') {
+                try {
+                    // Convert base64 to array buffer
+                    const pdfData = await fetch(`data:application/pdf;base64,${document.content}`).then(res => res.arrayBuffer());
+                    await renderPdf(pdfData);
+                } catch (error) {
+                    console.error('Error loading PDF:', error);
+                    container.innerHTML = '<div class="error-message">Error loading PDF. Please try again.</div>';
+                }
+            } else {
+                // For text files, show the content directly
+                container.innerHTML = `<div class="document-text">${document.content}</div>`;
+            }
+            
+            // Add a welcome message specific to the document
+            addMessage(`I've loaded "${document.fileName}". Feel free to ask me any questions about its content!`, true);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('document-title').textContent = 'Error Loading Document';
+            document.getElementById('document-content').innerHTML = `
+                <div class="error-message" style="display: block;">
+                    Failed to load document. Please try again or go back to your documents.
+                </div>
+            `;
+        });
+
+        // Chat functionality
         const chatArea = document.getElementById('chat-area');
         const chatInput = document.getElementById('chat-input');
         const sendBtn = document.getElementById('send-btn');
-        let files = [];
-
-        // Load user's previous files if any
-        const savedFiles = JSON.parse(localStorage.getItem(`files_${currentUser}`)) || [];
-        if (savedFiles.length > 0) {
-            // We can only store file metadata, not the actual files
-            savedFiles.forEach(fileData => {
-                addMessage(`Previously uploaded: ${fileData.name}`, true);
-            });
-        }
-
-        // Add logout button
-        const logoutBtn = document.createElement('button');
-        logoutBtn.textContent = 'Logout';
-        logoutBtn.style.cssText = 'position: absolute; top: 20px; right: 20px; padding: 8px 16px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer;';
-        document.body.appendChild(logoutBtn);
-
-        logoutBtn.addEventListener('click', () => {
-            localStorage.removeItem('currentUser');
-            window.location.href = 'login.html';
-        });
-
-        // Prevent default drag behaviors
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, preventDefaults, false);
-            document.body.addEventListener(eventName, preventDefaults, false);
-        });
-
-        // Highlight drop zone when dragging over it
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropZone.addEventListener(eventName, highlight, false);
-        });
-
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, unhighlight, false);
-        });
-
-        // Handle dropped files
-        dropZone.addEventListener('drop', handleDrop, false);
-        fileInput.addEventListener('change', handleFileSelect, false);
-
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-
-        function highlight(e) {
-            dropZone.classList.add('dragover');
-        }
-
-        function unhighlight(e) {
-            dropZone.classList.remove('dragover');
-        }
-
-        function handleDrop(e) {
-            const dt = e.dataTransfer;
-            const newFiles = [...dt.files];
-            handleFiles(newFiles);
-        }
-
-        function handleFileSelect(e) {
-            const newFiles = [...e.target.files];
-            handleFiles(newFiles);
-        }
-
-        function handleFiles(newFiles) {
-            files = [...files, ...newFiles];
-            updateFileList();
-            analyzeBtn.disabled = files.length === 0;
-            
-            // Save file metadata to localStorage
-            const fileMetadata = files.map(file => ({
-                name: file.name,
-                size: file.size,
-                type: file.type,
-                lastModified: file.lastModified
-            }));
-            localStorage.setItem(`files_${currentUser}`, JSON.stringify(fileMetadata));
-        }
-
-        function removeFile(index) {
-            files.splice(index, 1);
-            updateFileList();
-            analyzeBtn.disabled = files.length === 0;
-        }
-
-        function updateFileList() {
-            fileList.innerHTML = '';
-            files.forEach((file, index) => {
-                const fileItem = document.createElement('div');
-                fileItem.className = 'file-item';
-                fileItem.innerHTML = `
-                    <span class="file-name">${file.name}</span>
-                    <button class="remove-file" onclick="removeFile(${index})">Remove</button>
-                `;
-                fileList.appendChild(fileItem);
-            });
-        }
 
         function addMessage(message, isAi = false) {
             const messageDiv = document.createElement('div');
@@ -363,35 +349,74 @@
             messageDiv.textContent = message;
             chatArea.appendChild(messageDiv);
             chatArea.scrollTop = chatArea.scrollHeight;
-
-            // Save chat history
-            const chatHistory = JSON.parse(localStorage.getItem(`chat_${currentUser}`)) || [];
-            chatHistory.push({ message, isAi });
-            localStorage.setItem(`chat_${currentUser}`, JSON.stringify(chatHistory));
         }
 
-        analyzeBtn.addEventListener('click', () => {
-            addMessage('Analyzing documents...', true);
-            // Here you would typically send the files to your backend
-            console.log('Analyzing files:', files);
-        });
+        async function sendMessageToAI(message) {
+            if (!currentDocument) {
+                addMessage('Please wait for the document to load before asking questions.', true);
+                return;
+            }
 
-        sendBtn.addEventListener('click', () => {
+            try {
+                const response = await fetch('http://localhost:5001/api/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message,
+                        documentId: currentDocument._id
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to get AI response');
+                }
+
+                const data = await response.json();
+                if (data.response) {
+                    addMessage(data.response, true);
+                } else {
+                    throw new Error('Invalid response from AI');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage('Sorry, I encountered an error processing your request. Please try again.', true);
+            }
+        }
+
+        sendBtn.addEventListener('click', async () => {
             const message = chatInput.value.trim();
             if (message) {
                 addMessage(message);
                 chatInput.value = '';
-                setTimeout(() => {
-                    addMessage('I received your message. How can I help you analyze these documents?', true);
-                }, 1000);
+                await sendMessageToAI(message);
             }
         });
 
         chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
                 sendBtn.click();
             }
         });
+
+        function handleLogout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+
+        function formatFileSize(size) {
+            if (size < 1024) {
+                return `${size} bytes`;
+            } else if (size < 1024 * 1024) {
+                return `${(size / 1024).toFixed(2)} KB`;
+            } else {
+                return `${(size / (1024 * 1024)).toFixed(2)} MB`;
+            }
+        }
     </script>
 </body>
 </html>

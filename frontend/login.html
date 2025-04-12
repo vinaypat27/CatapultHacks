@@ -23,7 +23,7 @@
 
         .login-container {
             background: white;
-            padding: 30px;
+            padding: 40px;
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             width: 100%;
@@ -34,7 +34,6 @@
             color: #2c3e50;
             margin-bottom: 20px;
             text-align: center;
-            font-size: 1.8rem;
         }
 
         .form-group {
@@ -43,26 +42,26 @@
 
         label {
             display: block;
-            margin-bottom: 8px;
-            color: #2c3e50;
+            margin-bottom: 5px;
+            color: #34495e;
         }
 
         input {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
+            border-radius: 4px;
+            font-size: 16px;
         }
 
         .login-btn {
+            width: 100%;
+            padding: 12px;
             background: #3498db;
             color: white;
             border: none;
-            padding: 12px;
             border-radius: 6px;
             cursor: pointer;
-            width: 100%;
             font-size: 16px;
             margin-bottom: 15px;
         }
@@ -73,7 +72,7 @@
 
         .register-link {
             text-align: center;
-            color: #666;
+            color: #7f8c8d;
         }
 
         .register-link a {
@@ -81,19 +80,23 @@
             text-decoration: none;
         }
 
-        .error-message {
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        #error-message {
             color: #e74c3c;
-            margin-bottom: 15px;
             text-align: center;
+            margin-bottom: 15px;
             display: none;
         }
     </style>
 </head>
 <body>
     <div class="login-container">
-        <h1>Document Analyzer</h1>
-        <div id="error-message" class="error-message"></div>
-        <form id="login-form" onsubmit="return handleLogin(event)">
+        <h1>Login</h1>
+        <div id="error-message"></div>
+        <form onsubmit="return handleLogin(event)">
             <div class="form-group">
                 <label for="email">Email</label>
                 <input type="email" id="email" required>
@@ -108,32 +111,40 @@
     </div>
 
     <script>
-        // Initialize default users if none exist
-        let users = JSON.parse(localStorage.getItem('users')) || [];
-        if (users.length === 0) {
-            users = [
-                { email: 'test@example.com', password: 'test123', firstName: 'Test', lastName: 'User' },
-                { email: 'demo@example.com', password: 'demo123', firstName: 'Demo', lastName: 'User' },
-                { email: 'admin@example.com', password: 'admin123', firstName: 'Admin', lastName: 'User' }
-            ];
-            localStorage.setItem('users', JSON.stringify(users));
-        }
-
         function handleLogin(event) {
             event.preventDefault();
             const email = document.querySelector('#email').value.trim();
             const password = document.querySelector('#password').value;
             const errorMessage = document.querySelector('#error-message');
 
-            // Login
-            const user = users.find(user => user.email === email && user.password === password);
-            if (user) {
-                localStorage.setItem('currentUser', email);
-                window.location.href = 'index.html';
-            } else {
-                errorMessage.textContent = 'Invalid email or password';
+            // Login user
+            fetch('http://localhost:5001/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email,
+                    password
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.token) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    window.location.href = 'documents.html';
+                } else {
+                    errorMessage.textContent = data.message || 'Login failed';
+                    errorMessage.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                errorMessage.textContent = 'An error occurred. Please try again.';
                 errorMessage.style.display = 'block';
-            }
+            });
+
             return false;
         }
     </script>
