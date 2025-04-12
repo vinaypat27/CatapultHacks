@@ -1,0 +1,19 @@
+This Agreement is effective as of January 1, 2024 (“Effective Date”) and shall remain in force until December 31, 2025 (“Expiration Date”), unless terminated earlier in accordance with the provisions herein.
+
+The parties agree to maintain strict Confidentiality of all proprietary, personal, and sensitive information disclosed under this Agreement. Information shall not be shared with third parties without prior written consent.
+
+Pursuant to the General Data Protection Regulation (GDPR), both parties shall ensure the protection of personal data, provide data subjects with access and rectification rights, and promptly notify the other party of any data breaches. 
+
+In compliance with the Health Insurance Portability and Accountability Act (HIPAA), any Protected Health Information (PHI) accessed or processed under this Agreement shall be handled in accordance with applicable security and privacy rules.
+
+The Customer shall maintain commercial general Insurance coverage of not less than $2,000,000 per occurrence and $5,000,000 in aggregate. Proof of insurance shall be provided upon request.
+
+Each party shall have the right to perform periodic audits (“Audit Rights”) to verify compliance with data protection, confidentiality, and operational requirements outlined herein. The audited party shall provide reasonable access to facilities and records.
+
+Liability for damages shall be subject to a Cap on Liability not to exceed the total fees paid under this Agreement in the twelve (12) months preceding the claim. However, this limitation shall not apply to Uncapped Liability arising from gross negligence, willful misconduct, data breaches, or violations of confidentiality obligations.
+
+Each party agrees to defend, Indemnify, and hold harmless the other party against any third-party claims, losses, or damages arising out of or related to breaches of this Agreement, including but not limited to data privacy violations.
+
+Either party may exercise Termination for Convenience with 30 days' written notice, without penalty. Obligations under confidentiality and indemnification shall survive termination.
+
+This Agreement shall be governed by and construed in accordance with the laws of the State of California, without regard to its conflicts of law provisions.
