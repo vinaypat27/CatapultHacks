@@ -774,50 +774,51 @@
             });
 */
             sendBtn.addEventListener('click', async () => {
-                const message = chatInput.value.trim();
-                if (!message) return;
-                addMessage(message);
-                chatInput.value = '';
-                
-                let prompt = "User: " + message;
-                // If we have compliance data, add it to the prompt
-                if (complianceData) {
-                    prompt += "\nDocument compliance analysis: " + 
-                            "\nDomain: " + complianceData.detected_domain +
-                            "\nDomain Score: " + complianceData.domain_score + "/100" +
-                            "\nOverall Score: " + complianceData.overall_score + "/100" +
-                            "\nMatched categories: " + complianceData.domain_matched.join(", ");
-                }
-                
-                if (documentData && documentData.fullText) {
-                    prompt += "\nUsing the uploaded document (" + documentData.fileName + ") as reference:\n" + documentData.fullText;
-                }
-                
-                prompt += "\nProvide a helpful and context-aware response.";
-                
-                try {
+                const message = chatInput.value.trim();
+                if (!message) return;
+                addMessage(message);
+                chatInput.value = '';
+                
+                let prompt = "User: " + message;
+                // If we have compliance data, add it to the prompt
+                if (complianceData) {
+                    prompt += "\nDocument compliance analysis: " + 
+                            "\nDomain: " + complianceData.detected_domain +
+                            "\nDomain Score: " + complianceData.domain_score + "/100" +
+                            "\nOverall Score: " + complianceData.overall_score + "/100" +
+                            "\nMatched categories: " + complianceData.domain_matched.join(", ");
+                }
+                
+                if (documentData && documentData.fullText) {
+                    prompt += "\nUsing the uploaded document (" + documentData.fileName + ") as reference:\n" + documentData.fullText;
+                }
+                
+                prompt += "\nProvide a helpful and context-aware response.";
+                
+                try {
 
-                    const response = await puter.ai.chat(prompt, {model:"gpt-4o-mini"});
-                    if (message.toLowerCase().includes("pdf")) {
-                        const blob = new Blob([response], { type: 'text/plain' });
-                        const url = URL.createObjectURL(blob);
+                    const response = await puter.ai.chat(prompt, {model:"grok-beta"});
+                    if (message.toLowerCase().includes("pdf")) {
+                        const blob = new Blob([response], { type: 'text/plain' });
+                        const url = URL.createObjectURL(blob);
 
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = 'summary.txt';
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                        URL.revokeObjectURL(url);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'summary.txt';
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
 
-                        return; 
-                    }
+                        return; 
+                    }
 
-                    addMessage(response, true);
-                } catch (err) {
-                    addMessage("Error processing your message: " + err, true);
-                }
-            });
+                    addMessage(response, true);
+                } catch (err) {
+                    addMessage("Error processing your message: " + err, true);
+                }
+            });
+
 
             chatInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
