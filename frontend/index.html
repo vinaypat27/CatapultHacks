@@ -61,7 +61,7 @@
             .navbar .nav-links a {
                 margin-right: 20px;
                 text-decoration: none;
-                background-color: #4ea8ff;
+                background-color:  #17A2B8;
                 color: white;
                 padding: 8px 16px;
                 border-radius: 6px;
@@ -100,7 +100,7 @@
             }
         
             #upload-section {
-                border: 2px dashed var(--accent-color);
+                border: 2px solid var(--accent-color);
                 border-radius: 8px;
                 padding: 20px;
                 text-align: center;
@@ -110,6 +110,21 @@
                 transition: background-color 0.3s ease;
                 color: var(--text-color);
             }
+            #upload-btn {
+                background-color:  #17A2B8; /* blue */
+                color: white;
+                padding: 8px 16px;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+                transition: background-color 0.2s ease;
+            }
+
+#upload-btn:hover {
+    background-color: #1d78c1; /* darker blue on hover */
+}
+
         
             #upload-section:hover {
                 background: var(--hover-bg);
@@ -140,14 +155,25 @@
             #document-select {
                 padding: 10px;
                 font-size: 14px;
-                width: auto;
                 min-width: 400px;
+                max-width: 400px; /* Prevent expansion */
                 background: #222;
                 color: var(--text-color);
                 border: 1px solid var(--border-color);
                 border-radius: 6px;
                 appearance: none;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
+            #document-select option {
+                white-space: normal;
+            }
+            #document-select:hover {
+                cursor: pointer;
+            }
+
+
         
             #document-dropdown-container button {
                 padding: 10px 16px;
@@ -243,7 +269,7 @@
             }
         
             .user-message {
-                background: #007bff;
+                background: #17A2B8;
                 color: white;
                 align-self: flex-end;
             }
@@ -315,7 +341,8 @@
     <body>
         <div class="navbar">
             <div class="user-info">
-                <h2>Document Analysis</h2>
+                <h2 style="color: #17A2B8;">Legalyze</h2>
+
             </div>
             <div class="nav-links">
                 <a href="documents.html">My Documents</a>
@@ -326,11 +353,7 @@
         <div class="main-container">
             <div class="document-section">
                 <!-- Upload Area (always visible) -->
-                <div id="upload-section">
-                    <p>Drop your document here or click to upload</p>
-                    <input type="file" id="file-input" accept=".pdf,.txt" style="display: none;">
-                    <button onclick="document.getElementById('file-input').click()">Choose File</button>
-                </div>
+                <input type="file" id="file-input" accept=".pdf,.txt" style="display: none;">
                 <!-- Dropdown Menu for Document Selection -->
                 <div id="document-dropdown-container" style="margin-bottom: 20px; display: none;">
                     <select id="document-select">
@@ -338,7 +361,9 @@
                     </select>
                     <button id="view-selected-btn">View Document</button>
                     <button id="delete-selected-btn">Delete Document</button>
+                    <button id="upload-btn">Upload Document</button>
                 </div>
+                
                 <!-- Document Content Display -->
                 <div id="document-content">
                     <!-- Rendered PDF pages or text content appear here -->
@@ -347,7 +372,6 @@
             <div class="chat-wrapper">
                 <div class="document-info">
                     <h2 id="document-title"></h2>
-                    <p id="compliance-score">Compliance Score: --</p>
                 </div>
                     <div class="chat-header">
                         <h3>AI Assistant</h3>
@@ -392,17 +416,16 @@
                 complianceData = data;
                 
                 // Update the compliance score display
-                const complianceScoreElement = document.getElementById('compliance-score');
-                if (complianceScoreElement) {
-                    complianceScoreElement.textContent = `Compliance Score: ${data.domain_score}/100`;
-                }
+        
                 
                 // Update document title if available
                 if (documentData && documentData.fileName) {
+                    // Replace document title with compliance score as title
                     const documentTitleElement = document.getElementById('document-title');
-                    if (documentTitleElement) {
-                        documentTitleElement.textContent = documentData.fileName;
+                    if (documentTitleElement && complianceData) {
+                        documentTitleElement.textContent = `Compliance Score: ${complianceData.domain_score}/100`;
                     }
+
                 }
                 
                 // Optionally notify the user
@@ -774,7 +797,7 @@
                 
                 try {
 
-                    const response = await puter.ai.chat(prompt, {model:"grok-beta"});
+                    const response = await puter.ai.chat(prompt, {model:"gpt-4o-mini"});
                     if (message.toLowerCase().includes("pdf")) {
                         const blob = new Blob([response], { type: 'text/plain' });
                         const url = URL.createObjectURL(blob);
@@ -905,6 +928,17 @@
                 localStorage.removeItem('user');
                 window.location.href = 'login.html';
             }
+            document.getElementById('upload-btn').addEventListener('click', () => {
+    document.getElementById('file-input').click();
+});
+
+document.getElementById('file-input').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        processFile(file); // This function already exists in your script
+    }
+});
+
         </script>
     </body>
 

@@ -1,157 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Document Analyzer</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Legalyze</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-        body {
-            background-color: #f5f5f5;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 1px 20px 20px 20px; /* more space on top */
-        }
+    body {
+      background-color: #1a1a1a;
+      color: #f0f0f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
 
+    .logo {
+      display: block;
+      margin: 0 auto 40px auto;
+      max-width: 260px;
+      height: auto;
+      filter: brightness(1.1);
+    }
 
-        .logo {
-            display: block;
-            margin: 0 auto 40px auto;
-            max-width: 300px;
-            height: auto;
-        }
+    .login-container {
+      background: #1e1e1e;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+      width: 100%;
+      max-width: 400px;
+    }
 
-        .login-container {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-        }
+    h1 {
+      color: #ffffff;
+      margin-bottom: 24px;
+      text-align: center;
+    }
 
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-            text-align: center;
-        }
+    .form-group {
+      margin-bottom: 20px;
+    }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: #cfd8dc;
+    }
 
-        label {
-            display: block;
-            margin-bottom: 5px;
-            color: #34495e;
-        }
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #333;
+      border-radius: 4px;
+      background-color: #2a2a2a;
+      color: #f0f0f0;
+      font-size: 15px;
+    }
 
-        input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-bottom: 18px;
+    }
 
-        .login-btn {
-            width: 100%;
-            padding: 12px;
-            background: #3498db;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-bottom: 15px;
-        }
+    .login-btn:hover {
+      background: #2980b9;
+    }
 
-        .login-btn:hover {
-            background: #2980b9;
-        }
+    .register-link {
+      text-align: center;
+      color: #bbb;
+      font-size: 14px;
+    }
 
-        .register-link {
-            text-align: center;
-            color: #7f8c8d;
-        }
+    .register-link a {
+      color: #64b5f6;
+      text-decoration: none;
+    }
 
-        .register-link a {
-            color: #3498db;
-            text-decoration: none;
-        }
+    .register-link a:hover {
+      text-decoration: underline;
+    }
 
-        .register-link a:hover {
-            text-decoration: underline;
-        }
-
-        #error-message {
-            color: #e74c3c;
-            text-align: center;
-            margin-bottom: 15px;
-            display: none;
-        }
-    </style>
+    #error-message {
+      color: #e57373;
+      background-color: rgba(229, 57, 53, 0.1);
+      border: 1px solid #e53935;
+      padding: 10px;
+      border-radius: 4px;
+      text-align: center;
+      margin-bottom: 15px;
+      display: none;
+    }
+  </style>
 </head>
 <body>
-    <img src="LegalyzeLogo.png" alt="Legalyze Logo" class="logo">
-    <div class="login-container">
-        <h1>Login</h1>
-        <div id="error-message"></div>
-        <form onsubmit="return handleLogin(event)">
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" required>
-            </div>
-            <button type="submit" class="login-btn">Login</button>
-            <p class="register-link">Don't have an account? <a href="register.html">Create Account</a></p>
-        </form>
-    </div>
+  <img src="LegalizeLogo4.png" alt="Legalyze Logo" class="logo" />
+  <div class="login-container">
+    <h1>Login</h1>
+    <div id="error-message"></div>
+    <form onsubmit="return handleLogin(event)">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" required />
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" required />
+      </div>
+      <button type="submit" class="login-btn">Login</button>
+      <p class="register-link">
+        Don't have an account? <a href="register.html">Create Account</a>
+      </p>
+    </form>
+  </div>
 
-    <script>
-        function handleLogin(event) {
-            event.preventDefault();
-            const email = document.querySelector('#email').value.trim();
-            const password = document.querySelector('#password').value;
-            const errorMessage = document.querySelector('#error-message');
+  <script>
+    function handleLogin(event) {
+      event.preventDefault();
+      const email = document.querySelector('#email').value.trim();
+      const password = document.querySelector('#password').value;
+      const errorMessage = document.querySelector('#error-message');
 
-            fetch('http://localhost:5001/api/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email, password })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.token) {
-                    localStorage.setItem('token', data.token);
-                    localStorage.setItem('user', JSON.stringify(data.user));
-                    window.location.href = 'documents.html';
-                } else {
-                    errorMessage.textContent = data.message || 'Login failed';
-                    errorMessage.style.display = 'block';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                errorMessage.textContent = 'An error occurred. Please try again.';
-                errorMessage.style.display = 'block';
-            });
+      fetch('http://localhost:5001/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.token) {
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+            window.location.href = 'documents.html';
+          } else {
+            errorMessage.textContent = data.message || 'Login failed';
+            errorMessage.style.display = 'block';
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          errorMessage.textContent = 'An error occurred. Please try again.';
+          errorMessage.style.display = 'block';
+        });
 
-            return false;
-        }
-    </script>
+      return false;
+    }
+  </script>
 </body>
 </html>

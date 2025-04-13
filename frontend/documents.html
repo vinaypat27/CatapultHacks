@@ -30,7 +30,19 @@
                 align-items: center;
                 margin-bottom: 30px;
                 border-radius: 8px;
+                position: relative;
             }
+
+            .navbar-title {
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+                text-align: center;
+                color: #64b5f6;
+                font-weight: bold;
+                font-size: 22px;
+            }
+
 
             .user-info {
                 display: flex;
@@ -60,7 +72,7 @@
             .upload-section {
                 margin-bottom: 30px;
                 padding: 20px;
-                border: 2px dashed #555;
+                border: 2px solid #555;
                 border-radius: 8px;
                 text-align: center;
                 background: #2a2a2a;
@@ -78,30 +90,51 @@
             }
 
             .documents-list {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-                gap: 20px;
-            }
-
-            .document-card {
-                background: #2a2a2a;
-                border: 1px solid #444;
-                border-radius: 8px;
-                padding: 15px;
                 display: flex;
                 flex-direction: column;
-                gap: 10px;
+                align-items: center;    
+                gap: 12px;
+                width: 100%;           
+            }
+
+
+            .document-row {
+                background: #2a2a2a;
+                border: 1px solid #444;
+                border-radius: 6px;
+                padding: 16px 20px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 12px;
+
+                max-width: 1200px;       
+                width: 100%;             
+                margin: 0 auto;          
+            }
+
+
+
+
+            .document-info {
+                flex-grow: 1;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                font-size: 16px;
+                font-weight: 500;
+                color: #f0f0f0;
             }
 
             .document-actions {
                 display: flex;
                 gap: 10px;
+                flex-wrap: wrap;
             }
 
-            .view-btn,
-            .delete-btn {
-                flex: 1;
-                padding: 8px;
+            .document-actions button {
+                padding: 6px 12px;
                 border: none;
                 border-radius: 4px;
                 cursor: pointer;
@@ -113,10 +146,16 @@
                 color: white;
             }
 
+            .analyze-btn {
+                background: #17a2b8;
+                color: white;
+            }
+
             .delete-btn {
                 background: #e53935;
                 color: white;
             }
+
 
             .error-message {
                 color: #ef5350;
@@ -273,6 +312,33 @@
                 border-bottom: 1px solid #f5f5f5;
             }
 
+            .upload-wrapper {
+                margin-top: 80px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 30px;
+            }
+
+            .upload-description {
+                max-width: 600px;
+                background: #1e1e1e;
+                padding: 20px;
+                border-radius: 8px;
+                color: #ccc;
+                font-size: 15px;
+                border: 1px solid #333;
+            }
+
+            .upload-description ul {
+                list-style: disc;
+                margin-top: 10px;
+                padding-left: 20px;
+                text-align: left;
+            }
+
+
             @keyframes spin {
                 0% {
                     transform: rotate(0deg);
@@ -290,18 +356,59 @@
             <div class="user-info">
                 <h2>Welcome, <span id="user-name"></span></h2>
             </div>
-            <button class="logout-btn" onclick="handleLogout()">Logout</button>
+        
+            <div class="navbar-title">
+                <h2 style="color: #17A2B8;">Legalyze</h2>
+
+            </div>
+        
+            <div class="logout-wrapper">
+                <button class="logout-btn" onclick="handleLogout()">Logout</button>
+            </div>
         </div>
+        
+        
+        
 
         <div class="main-container">
-            <div class="drop-zone" id="drop-zone">
-                <input type="file" id="file-input" accept=".txt,.pdf" style="display: none;">
-                <p>Drop your document here or click to upload</p>
-                <p class="small">Supported formats: PDF, TXT</p>
+            <div class="upload-wrapper">
+                <div class="upload-description">
+                    <div class="upload-description">
+                        <h2 style="margin-bottom: 10px;">Understand Your Legal Documents with Ease</h2>
+                        <p style="margin-bottom: 15px;">
+                            <strong>Ready to make sense of your legal documents?</strong><br>
+                            Start by uploading your file—contracts, agreements, policies, or any legal paperwork you need help with.
+                        </p>
+                        <p style="margin-bottom: 10px;">
+                            Once uploaded, our <strong>AI-powered legal agent</strong> can help you:
+                        </p>
+                        <ul style="margin-bottom: 15px;">
+                            <li>✔️ Break down complex legal language</li>
+                            <li>✔️ Summarize key clauses and obligations</li>
+                            <li>✔️ Highlight potential risks or red flags</li>
+                            <li>✔️ Answer your questions in plain English</li>
+                        </ul>
+                        <p style="margin-bottom: 0;">
+                            Think of it as your personal legal assistant—always ready to help you <strong>understand, analyze, and navigate</strong> your documents with confidence.
+                        </p>
+                        <p style="margin-top: 20px; font-weight: bold;">📤 Upload your document to get started!</p>
+                    </div>
+                    
+                    
+                <div class="drop-zone" id="drop-zone">
+                    <input type="file" id="file-input" accept=".txt,.pdf" style="display: none;">
+                    <p>Drop your document here or click to upload</p>
+                    <p class="small">Supported formats: PDF, TXT</p>
+                </div>
+            </div>
+            
+            
+
             </div>
             <div id="error-message" class="error-message"></div>
             <div id="documents-list" class="documents-list"></div>
         </div>
+        
 
         <script>
             // Check authentication
@@ -425,22 +532,23 @@
                         const documentsList = document.getElementById('documents-list');
                         documentsList.innerHTML = '';
                         documents.forEach(doc => {
-                        const card = document.createElement('div');
-                        card.className = 'document-card';
-                        card.innerHTML = `
-                            <h3>${doc.fileName}</h3>
-                            <p>Size: ${formatFileSize(doc.fileSize)}</p>
-                            <p>Type: ${doc.fileType}</p>
-                            <div class="document-actions">
-                            <button class="view-btn" onclick="viewDocument('${doc._id}')">View Document</button>
-                            <button class="delete-btn" onclick="deleteDocument('${doc._id}')">Delete</button>
-                            ${doc.fileType === 'application/pdf' ? 
-                `<button class="analyze-btn" onclick="analyzeCompliance('${doc._id}')">Check Compliance</button>` : ''}
-        </div>
-    `;
-    documentsList.appendChild(card);
-});
+                            const row = document.createElement('div');
+                            row.className = 'document-row';
+                            row.innerHTML = `
+                                <div class="document-info">
+                                    ${doc.fileName}
+                                </div>
+                                <div class="document-actions">
+                                    <button class="view-btn" onclick="viewDocument('${doc._id}')">View</button>
+                                    <button class="delete-btn" onclick="deleteDocument('${doc._id}')">Delete</button>
+                                    ${doc.fileType === 'application/pdf' ? 
+                                        `<button class="analyze-btn" onclick="analyzeCompliance('${doc._id}')">Check Compliance</button>` : ''}
+                                </div>
+                            `;
+                            documentsList.appendChild(row);
+                        });
                     })
+
                     .catch(error => {
                         console.error('Error:', error);
                         document.getElementById('error-message').className = 'error-message';
