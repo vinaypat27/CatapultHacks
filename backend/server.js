@@ -8,6 +8,8 @@ const Document = require('./models/Document');
 const path = require('path');
 
 const app = express();
+const { spawn } = require('child_process');
+
 
 // Middleware
 app.use(cors());
@@ -213,6 +215,7 @@ app.delete('/api/documents/:id', authenticateToken, async (req, res) => {
     }
 });
 
+
 // Document analysis endpoint
 app.post('/api/analyze', authenticateToken, async (req, res) => {
     try {
@@ -239,6 +242,47 @@ app.post('/api/analyze', authenticateToken, async (req, res) => {
     }
 });
 
+
+// Compliance analysis endpoint
+app.post('/api/analyze-compliance', authenticateToken, async (req, res) => {
+    try {
+      const { documentId } = req.body;
+      
+      // Fetch the document from your database
+      const document = await Document.findById(documentId);
+      if (!document) {
+        return res.status(404).json({ error: 'Document not found' });
+      }
+      
+      // Save PDF content to a temporary file
+      const tempFilePath = `/tmp/${document._id}.pdf`;
+      require('fs').writeFileSync(tempFilePath, Buffer.from(document.content, 'base64'));
+      
+      // Call the Python script
+      const pythonProcess = spawn('python3', ['compliance_checker.py', tempFilePath]);
+      
+      let result = '';
+      pythonProcess.stdout.on('data', (data) => {
+        result += data.toString();
+      });
+      
+      pythonProcess.on('close', (code) => {
+        // Clean up temp file
+        require('fs').unlinkSync(tempFilePath);
+        
+        if (code !== 0) {
+          return res.status(500).json({ error: 'Analysis failed' });
+        }
+        
+        // Parse the result
+        const analysisResult = JSON.parse(result);
+        res.json(analysisResult);
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
 // Serve static files
 app.use(express.static(path.join(__dirname, '../frontend')));
 
@@ -252,4 +296,44 @@ app.get('*', (req, res) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
+});
+
+
+app.post('/api/analyze-compliance', authenticateToken, async (req, res) => {
+  try {
+    const { documentId } = req.body;
+    
+    // Fetch the document from your database
+    const document = await Document.findById(documentId);
+    if (!document) {
+      return res.status(404).json({ error: 'Document not found' });
+    }
+    
+    // Save PDF content to a temporary file
+    const tempFilePath = `/tmp/${document._id}.pdf`;
+    require('fs').writeFileSync(tempFilePath, Buffer.from(document.content, 'base64'));
+    
+    // Call the Python script
+    const pythonProcess = spawn('python', ['compliance_checker.py', tempFilePath]);
+    
+    let result = '';
+    pythonProcess.stdout.on('data', (data) => {
+      result += data.toString();
+    });
+    
+    pythonProcess.on('close', (code) => {
+      // Clean up temp file
+      require('fs').unlinkSync(tempFilePath);
+      
+      if (code !== 0) {
+        return res.status(500).json({ error: 'Analysis failed' });
+      }
+      
+      // Parse the result
+      const analysisResult = JSON.parse(result);
+      res.json(analysisResult);
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
