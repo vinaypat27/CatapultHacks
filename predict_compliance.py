@@ -31,8 +31,10 @@ def detect_domain(text):
 def check_categories(text, categories):
     matched = set()
 
+    # Normalize text
+    normalized_text = re.sub(r'\s+', ' ', text).lower()
     # Model prediction
-    X = vectorizer.transform([text])
+    X = vectorizer.transform([normalized_text])
     pred = model.predict(X)[0]
     if pred in categories:
         matched.add(pred)
@@ -41,8 +43,10 @@ def check_categories(text, categories):
     for cat in categories:
         if cat not in matched and cat in keyword_patterns:
             for pattern in keyword_patterns[cat]:
-                if re.search(pattern, text, re.IGNORECASE):
+                if re.search(pattern, normalized_text, re.IGNORECASE):
                     matched.add(cat)
+                    # Optional debug logging
+                    print(f"🔍 Matched '{cat}' with pattern: '{pattern}'")
                     break
 
     unmatched = set(categories) - matched
@@ -74,7 +78,7 @@ def predict_compliance(text):
 
 # Example usage
 if __name__ == "__main__":
-    pdf_text = extract_text_from_pdf("/Users/parthranade/Documents/Hackathon/CUAD_v1/full_contract_pdf/Part_I/License_Agreements/AlliedEsportsEntertainmentInc_20190815_8-K_EX-10.19_11788293_EX-10.19_Content License Agreement.pdf")
+    pdf_text = extract_text_from_pdf("/Users/parthranade/Documents/Hackathon/CUAD_v1/full_contract_pdf/Part_I/License_Agreements/ChinaRealEstateInformationCorp_20090929_F-1_EX-10.32_4771615_EX-10.32_Content License Agreement.pdf")
     
     with open("sample_contract.txt", "w") as f:
         f.write(pdf_text)

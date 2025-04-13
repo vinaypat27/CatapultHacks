@@ -14,7 +14,8 @@ DOMAIN_CATEGORIES = {
         "Non-Compete", "Non-Disparagement", "No-Solicit Of Employees", "Confidential Information", "failure to exercise"
     ],
     "license": [
-        "License", "License Agreement", "Licensee", "intellectual property rights", "Reservation of rights"
+        "License", "License Agreement", "Intellectual property rights", "Reservation of rights", "Cap On Liability", "Confidentiality", "Indemnification", 
+        "License", "Non-Compliant", "Non-Disparagement", "Uncapped Liability"
     ]
 }
 
