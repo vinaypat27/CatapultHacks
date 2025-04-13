@@ -11,37 +11,74 @@
         <script src="https://js.puter.com/v2/"></script>
         <style>
             /* Global Styles */
+            :root {
+                --bg-color: #121212;
+                --text-color: #f0f0f0;
+                --card-bg: #1e1e1e;
+                --border-color: #333;
+                --accent-color: #3498db;
+                --success-color: #28a745;
+                --error-color: #dc3545;
+                --hover-bg: #2a2a2a;
+            }
+        
             * {
                 margin: 0;
                 padding: 0;
                 box-sizing: border-box;
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             }
-
+        
             body {
-                background-color: #f5f5f5;
+                background-color: var(--bg-color);
+                color: var(--text-color);
                 min-height: 100vh;
                 padding: 20px;
             }
-
+        
             .navbar {
-                background: white;
+                background: var(--card-bg);
                 padding: 15px 30px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
                 margin-bottom: 30px;
                 border-radius: 8px;
+                gap: 20px;
             }
-
-            .navbar .nav-links a,
-            .navbar .logout-btn {
-                margin-left: 15px;
+        
+            .navbar .user-info {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+        
+            .navbar .user-info img.logo {
+                height: 32px;
+            }
+        
+            .navbar .nav-links a {
+                margin-right: 20px;
                 text-decoration: none;
-                color: #333;
+                background-color: #4ea8ff;
+                color: white;
+                padding: 8px 16px;
+                border-radius: 6px;
+                cursor: pointer;
             }
-
+        
+            .navbar .logout-btn {
+                margin-left: 20px;
+                text-decoration: none;
+                color: white;
+                background-color: var(--error-color);
+                padding: 8px 16px;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+            }
+        
             .main-container {
                 display: grid;
                 grid-template-columns: 2fr 1fr;
@@ -50,112 +87,119 @@
                 margin: 0 auto;
                 height: calc(100vh - 100px);
             }
-
-            /* Left Column (Document Section) */
+        
             .document-section {
-                background: white;
+                background: var(--card-bg);
                 padding: 30px;
                 border-radius: 8px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
                 display: flex;
                 flex-direction: column;
                 height: 100%;
                 overflow-y: auto;
             }
-
-            /* Upload Area – always visible */
+        
             #upload-section {
-                border: 2px dashed #3498db;
+                border: 2px dashed var(--accent-color);
                 border-radius: 8px;
                 padding: 20px;
                 text-align: center;
-                background: #f8f9fa;
+                background: #1a1a1a;
                 margin-bottom: 20px;
                 cursor: pointer;
                 transition: background-color 0.3s ease;
+                color: var(--text-color);
             }
-
+        
             #upload-section:hover {
-                background: #e9ecef;
+                background: var(--hover-bg);
             }
-
+        
             #upload-section.dragover {
-                background: #e3f2fd;
-                border-color: #1565c0;
+                background: #2c2c2c;
+                border-color: #90caf9;
             }
-
+        
             #upload-section button {
                 margin-top: 10px;
                 padding: 8px 16px;
-                background: #3498db;
+                background: var(--accent-color);
                 color: white;
                 border: none;
                 border-radius: 4px;
                 cursor: pointer;
             }
-
-            /* Dropdown Menu for Document Selection */
+        
             #document-dropdown-container {
                 margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
             }
-
+        
             #document-select {
-                padding: 8px;
+                padding: 10px;
                 font-size: 14px;
-                width: 60%;
+                width: auto;
+                min-width: 400px;
+                background: #222;
+                color: var(--text-color);
+                border: 1px solid var(--border-color);
+                border-radius: 6px;
+                appearance: none;
             }
-
+        
             #document-dropdown-container button {
-                padding: 8px 16px;
-                margin-left: 10px;
+                padding: 10px 16px;
                 font-size: 14px;
                 border: none;
-                border-radius: 4px;
+                border-radius: 6px;
                 cursor: pointer;
             }
-
+        
             #view-selected-btn {
-                background: #28a745;
+                background: var(--success-color);
                 color: white;
             }
-
+        
             #delete-selected-btn {
-                background: #dc3545;
+                background: var(--error-color);
                 color: white;
             }
-
-            /* Document Content */
+        
             #document-content {
                 flex-grow: 1;
                 overflow-y: auto;
-                background: #f8f9fa;
+                background: #1a1a1a;
                 border-radius: 4px;
-                border: 1px solid #dee2e6;
+                border: 1px solid var(--border-color);
                 padding: 10px;
+                color: var(--text-color);
             }
-
+        
             .pdf-page {
                 margin: 10px auto;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
                 width: 100%;
                 height: auto;
             }
-
+        
             .document-text {
                 padding: 20px;
                 line-height: 1.6;
                 white-space: pre-wrap;
             }
-
-            /* Chat Section (Right Column) */
+        
             .chat-wrapper {
                 height: 700px;
                 display: flex;
                 flex-direction: column;
+                background: transparent;
+                box-shadow: none;
             }
-
+        
             .score-section {
-                background: #e3f2fd;
+                background: #2c2c2c;
                 padding: 10px;
                 border-radius: 4px;
                 text-align: center;
@@ -163,24 +207,24 @@
                 height: 50px;
                 line-height: 30px;
             }
-
+        
             .chat-content {
                 flex: 1;
                 display: flex;
                 flex-direction: column;
                 min-height: 0;
             }
-
+        
             .chat-header {
                 padding-bottom: 15px;
-                border-bottom: 1px solid #eee;
+                border-bottom: 1px solid #444;
                 margin-bottom: 15px;
             }
-
+        
             .chat-header h3 {
                 margin-bottom: 5px;
             }
-
+        
             .chat-area {
                 flex: 1;
                 min-height: 0;
@@ -190,51 +234,53 @@
                 flex-direction: column;
                 gap: 10px;
             }
-
+        
             .message {
                 padding: 10px 15px;
                 border-radius: 8px;
                 max-width: 80%;
                 word-wrap: break-word;
             }
-
+        
             .user-message {
                 background: #007bff;
                 color: white;
                 align-self: flex-end;
             }
-
+        
             .ai-message {
-                background: #f0f0f0;
-                color: #333;
+                background: #333;
+                color: white;
                 align-self: flex-start;
             }
-
+        
             .chat-input-container {
                 display: flex;
                 gap: 10px;
                 padding-top: 15px;
-                border-top: 1px solid #eee;
+                border-top: 1px solid #444;
                 margin-top: auto;
             }
-
+        
             .chat-input {
                 flex-grow: 1;
                 padding: 10px;
-                border: 1px solid #ddd;
+                border: 1px solid #555;
                 border-radius: 4px;
                 font-size: 14px;
+                background: #222;
+                color: var(--text-color);
             }
-
+        
             .send-btn {
-                background: #28a745;
+                background: var(--success-color);
                 color: white;
                 border: none;
                 padding: 10px 20px;
                 border-radius: 4px;
                 cursor: pointer;
             }
-
+        
             .loading,
             .error-message,
             .success-message {
@@ -243,22 +289,22 @@
                 margin: 10px 0;
                 border-radius: 4px;
             }
-
+        
             .error-message {
-                color: #dc3545;
-                background: #f8d7da;
+                color: var(--error-color);
+                background: rgba(220, 53, 69, 0.1);
             }
-
+        
             .success-message {
-                color: #28a745;
-                background: #d4edda;
+                color: var(--success-color);
+                background: rgba(40, 167, 69, 0.1);
             }
-
+        
             @media (max-width: 1024px) {
                 .main-container {
                     grid-template-columns: 1fr;
                 }
-
+        
                 .chat-wrapper {
                     height: 500px;
                 }
@@ -299,8 +345,10 @@
                 </div>
             </div>
             <div class="chat-wrapper">
-                <div id="score-section" class="score-section">Compliance Score: --</div>
-                <div class="chat-content">
+                <div class="document-info">
+                    <h2 id="document-title"></h2>
+                    <p id="compliance-score">Compliance Score: --</p>
+                </div>
                     <div class="chat-header">
                         <h3>AI Assistant</h3>
                         <p>Ask questions about your document</p>
@@ -319,13 +367,15 @@
         </div>
 
         <script>
-            // Set up PDF.js worker
-            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
-
             // Global variables
             let documentData = null; // { fileName, fullText }
             let currentFile = null;
+            let complianceData = null; // Add this line to store compliance results
 
+            // Set up PDF.js worker
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+
+            
             // DOM Elements
             const uploadSection = document.getElementById('upload-section');
             const fileInput = document.getElementById('file-input');
@@ -337,6 +387,28 @@
             const chatArea = document.getElementById('chat-area');
             const chatInput = document.getElementById('chat-input');
             const sendBtn = document.getElementById('send-btn');
+
+            function storeComplianceData(data) {
+                complianceData = data;
+                
+                // Update the compliance score display
+                const complianceScoreElement = document.getElementById('compliance-score');
+                if (complianceScoreElement) {
+                    complianceScoreElement.textContent = `Compliance Score: ${data.domain_score}/100`;
+                }
+                
+                // Update document title if available
+                if (documentData && documentData.fileName) {
+                    const documentTitleElement = document.getElementById('document-title');
+                    if (documentTitleElement) {
+                        documentTitleElement.textContent = documentData.fileName;
+                    }
+                }
+                
+                // Optionally notify the user
+                addMessage("Compliance analysis results are now available for chat context.", true);
+            }
+
 
             // File upload handling
             fileInput.addEventListener('change', (e) => {
@@ -475,7 +547,7 @@
                 }
                 return fullText;
             }
-
+/*
             // Load a document from the server by its ID
             async function loadDocumentFromServer(docId) {
                 const token = localStorage.getItem('token');
@@ -507,6 +579,74 @@
                     document.getElementById('document-content').innerHTML = `<div class="error-message">Failed to load document.</div>`;
                 }
             }
+
+            
+*/
+
+            // Analyze document compliance
+            async function analyzeCompliance(documentId) {
+                const token = localStorage.getItem('token');
+                if (!token || !documentId) return;
+                
+                try {
+                    // Show loading message
+                    addMessage("Analyzing document compliance...", true);
+                    
+                    const response = await fetch('http://localhost:5001/api/analyze-compliance', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ documentId: documentId })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to analyze document compliance');
+                    }
+                    
+                    const result = await response.json();
+                    storeComplianceData(result);
+                } catch (error) {
+                    console.error('Error:', error);
+                    addMessage("Error analyzing compliance: " + error.message, true);
+                }
+            }
+
+            async function loadDocumentFromServer(docId) {
+                const token = localStorage.getItem('token');
+                try {
+                    const response = await fetch(`http://localhost:5001/api/documents/${docId}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (!response.ok) throw new Error('Document not found');
+                    const doc = await response.json();
+                    documentData = { fileName: doc.fileName, fullText: '', content: doc.content };
+                    if (doc.fileType === 'application/pdf') {
+                        const dataURL = `data:application/pdf;base64,${doc.content}`;
+                        renderPdf(dataURL);
+                        try {
+                            const arrayBuffer = await fetch(dataURL).then(res => res.arrayBuffer());
+                            const text = await extractPdfTextFromBuffer(arrayBuffer);
+                            documentData.fullText = text;
+                            addMessage(`Document "${doc.fileName}" loaded.`, true);
+                            
+                            // Call compliance analysis for PDF documents
+                            analyzeCompliance(docId);
+                        } catch (err) {
+                            addMessage(`Error analyzing document: ${err}`, true);
+                        }
+                    } else {
+                        document.getElementById('document-content').innerHTML = `<div class="document-text">${doc.content}</div>`;
+                        documentData.fullText = doc.content;
+                        addMessage(`Document "${doc.fileName}" loaded.`, true);
+                    }
+                } catch (error) {
+                    addMessage(`Error loading document: ${error}`, true);
+                    document.getElementById('document-content').innerHTML = `<div class="error-message">Failed to load document.</div>`;
+                }
+            }
+
 
             // Populate the dropdown with documents from the server
             async function loadDocumentsDropdown(selectedId = "") {
@@ -591,7 +731,7 @@
                 chatArea.appendChild(messageDiv);
                 chatArea.scrollTop = chatArea.scrollHeight;
             }
-
+/*
             sendBtn.addEventListener('click', async () => {
                 const message = chatInput.value.trim();
                 if (!message) return;
@@ -602,6 +742,37 @@
                     prompt += "\nUsing the uploaded document (" + documentData.fileName + ") as reference:\n" + documentData.fullText;
                 }
                 prompt += "\nProvide a helpful and context-aware response.";
+                try {
+                    const response = await puter.ai.chat(prompt);
+                    addMessage(response, true);
+                } catch (err) {
+                    addMessage("Error processing your message: " + err, true);
+                }
+            });
+*/
+            sendBtn.addEventListener('click', async () => {
+                const message = chatInput.value.trim();
+                if (!message) return;
+                addMessage(message);
+                chatInput.value = '';
+                
+                let prompt = "User: " + message;
+                
+                // If we have compliance data, add it to the prompt
+                if (complianceData) {
+                    prompt += "\nDocument compliance analysis: " + 
+                            "\nDomain: " + complianceData.detected_domain +
+                            "\nDomain Score: " + complianceData.domain_score + "/100" +
+                            "\nOverall Score: " + complianceData.overall_score + "/100" +
+                            "\nMatched categories: " + complianceData.domain_matched.join(", ");
+                }
+                
+                if (documentData && documentData.fullText) {
+                    prompt += "\nUsing the uploaded document (" + documentData.fileName + ") as reference:\n" + documentData.fullText;
+                }
+                
+                prompt += "\nProvide a helpful and context-aware response.";
+                
                 try {
                     const response = await puter.ai.chat(prompt);
                     addMessage(response, true);
@@ -628,6 +799,91 @@
                     loadDocumentsDropdown();
                 }
             });
+/*
+            async function analyzeCompliance(id) {
+                const token = localStorage.getItem('token');
+                
+                // Show loading indicator
+                const loadingMessage = document.createElement('div');
+                loadingMessage.innerHTML = '<div class="loading-spinner"></div> Analyzing document compliance...';
+                loadingMessage.className = 'success-message';
+                loadingMessage.style.display = 'block';
+                document.getElementById('error-message').replaceWith(loadingMessage);
+                
+                try {
+                    const response = await fetch('http://localhost:5001/api/analyze-compliance', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ documentId: id })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to analyze document');
+                    }
+                    
+                    const result = await response.json();
+                    
+                    // Create a modal to display results
+                    const modalHtml = `
+                        <div class="compliance-modal">
+                            <div class="compliance-modal-content">
+                                <span class="close-modal">&times;</span>
+                                <h2>Compliance Analysis Results</h2>
+                                <div class="results-container">
+                                    <div class="score-section">
+                                        <h3>Domain: ${result.detected_domain.charAt(0).toUpperCase() + result.detected_domain.slice(1)}</h3>
+                                        <div class="score-display">
+                                            <div class="score-circle" style="--score: ${result.domain_score/10}">
+                                                <span>${result.domain_score}/10</span>
+                                            </div>
+                                            <p>Domain Score</p>
+                                        </div>
+                                        <div class="score-display">
+                                            <div class="score-circle" style="--score: ${result.overall_score/10}">
+                                                <span>${result.overall_score}/10</span>
+                                            </div>
+                                            <p>Overall Score</p>
+                                        </div>
+                                    </div>
+                                    <div class="categories-section">
+                                        <div class="category-column">
+                                            <h4>Matched Categories (Domain)</h4>
+                                            <ul>${result.domain_matched.map(cat => `<li>${cat}</li>`).join('')}</ul>
+                                        </div>
+                                        <div class="category-column">
+                                            <h4>Unmatched Categories (Domain)</h4>
+                                            <ul>${result.domain_unmatched.map(cat => `<li>${cat}</li>`).join('')}</ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Add modal to the DOM
+                    const modalElement = document.createElement('div');
+                    modalElement.innerHTML = modalHtml;
+                    document.body.appendChild(modalElement.firstChild);
+                    
+                    // Add event listener to close modal
+                    document.querySelector('.close-modal').addEventListener('click', () => {
+                        document.querySelector('.compliance-modal').remove();
+                    });
+                    
+                    // Remove loading message
+                    loadingMessage.remove();
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                    loadingMessage.className = 'error-message';
+                    loadingMessage.innerHTML = 'Error analyzing document: ' + error.message;
+                }
+            }
+*/
+
 
             function handleLogout() {
                 localStorage.removeItem('token');

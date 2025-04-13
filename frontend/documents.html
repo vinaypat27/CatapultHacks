@@ -11,19 +11,20 @@
                 margin: 0;
                 padding: 0;
                 box-sizing: border-box;
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                font-family: 'Sans Serif', Tahoma, Geneva, Verdana, sans-serif;
             }
 
             body {
-                background-color: #f5f5f5;
+                background-color: #121212;
+                color: #e0e0e0;
                 min-height: 100vh;
                 padding: 20px;
             }
 
             .navbar {
-                background: white;
+                background: #1e1e1e;
                 padding: 15px 30px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
@@ -38,7 +39,7 @@
             }
 
             .logout-btn {
-                background: #dc3545;
+                background: #e53935;
                 color: white;
                 border: none;
                 padding: 8px 16px;
@@ -50,22 +51,23 @@
             .main-container {
                 max-width: 1200px;
                 margin: 0 auto;
-                background: white;
+                background: #1c1c1c;
                 padding: 30px;
                 border-radius: 8px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
             }
 
             .upload-section {
                 margin-bottom: 30px;
                 padding: 20px;
-                border: 2px dashed #ccc;
+                border: 2px dashed #555;
                 border-radius: 8px;
                 text-align: center;
+                background: #2a2a2a;
             }
 
             .upload-btn {
-                background: #007bff;
+                background: #1e88e5;
                 color: white;
                 border: none;
                 padding: 10px 20px;
@@ -82,8 +84,8 @@
             }
 
             .document-card {
-                background: white;
-                border: 1px solid #ddd;
+                background: #2a2a2a;
+                border: 1px solid #444;
                 border-radius: 8px;
                 padding: 15px;
                 display: flex;
@@ -107,60 +109,168 @@
             }
 
             .view-btn {
-                background: #28a745;
+                background: #43a047;
                 color: white;
             }
 
             .delete-btn {
-                background: #dc3545;
+                background: #e53935;
                 color: white;
             }
 
             .error-message {
-                color: #dc3545;
+                color: #ef5350;
                 margin: 10px 0;
                 display: none;
             }
 
             .success-message {
-                color: #28a745;
+                color: #81c784;
                 margin: 10px 0;
                 display: none;
                 text-align: center;
                 padding: 10px;
-                background: #d4edda;
+                background: #2e7d32;
                 border-radius: 4px;
             }
 
             .drop-zone {
-                border: 2px dashed #007bff;
+                border: 2px dashed #2196f3;
                 border-radius: 8px;
                 padding: 40px;
                 text-align: center;
                 margin: 20px 0;
-                background: #f8f9fa;
+                background: #2c2c2c;
                 cursor: pointer;
-                transition: background-color 0.3s;
+                transition: background-color 0.3s, border-color 0.3s;
             }
 
             .drop-zone:hover {
-                background: #e9ecef;
+                background: #3a3a3a;
             }
 
             .drop-zone.dragover {
-                background: #e3f2fd;
-                border-color: #0056b3;
+                background: #1e3a5f;
+                border-color: #64b5f6;
             }
 
             .loading-spinner {
                 display: inline-block;
                 width: 20px;
                 height: 20px;
-                border: 3px solid #f3f3f3;
-                border-top: 3px solid #3498db;
+                border: 3px solid #2c2c2c;
+                border-top: 3px solid #64b5f6;
                 border-radius: 50%;
                 animation: spin 1s linear infinite;
                 margin-right: 10px;
+            }
+
+            .analyze-btn {
+                background: #17a2b8;
+                color: white;
+                border: none;
+                padding: 8px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 14px;
+                flex: 1;
+            }
+
+            .compliance-modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            }
+
+            .compliance-modal-content {
+                background-color: white;
+                padding: 30px;
+                border-radius: 8px;
+                width: 80%;
+                max-width: 800px;
+                max-height: 80vh;
+                overflow-y: auto;
+                position: relative;
+            }
+
+            .close-modal {
+                position: absolute;
+                top: 15px;
+                right: 15px;
+                font-size: 24px;
+                cursor: pointer;
+            }
+
+            .results-container {
+                margin-top: 20px;
+            }
+
+            .score-section {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 30px;
+                margin-bottom: 30px;
+            }
+
+            .score-display {
+                text-align: center;
+            }
+
+            .score-circle {
+                width: 200px;
+                height: 100px;
+                border-radius: 50%;
+                background: conic-gradient(#28a745 calc(var(--score) * 360deg), #e9ecef 0deg);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 10px;
+                position: relative;
+            }
+
+            .score-circle::before {
+                content: '';
+                position: absolute;
+                width: 80px;
+                height: 80px;
+                border-radius: 50%;
+                background: white;
+            }
+
+            .score-circle span {
+                position: relative;
+                z-index: 1;
+                font-weight: bold;
+                font-size: 18px;
+            }
+
+            .categories-section {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+
+            .category-column h4 {
+                margin-bottom: 10px;
+                padding-bottom: 5px;
+                border-bottom: 1px solid #ddd;
+            }
+
+            .category-column ul {
+                list-style-type: none;
+                padding: 0;
+            }
+
+            .category-column li {
+                padding: 5px 0;
+                border-bottom: 1px solid #f5f5f5;
             }
 
             @keyframes spin {
@@ -210,6 +320,7 @@
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
 
             // Setup file upload handling
+            loadDocuments();
             const dropZone = document.getElementById('drop-zone');
             const fileInput = document.getElementById('file-input');
 
@@ -314,19 +425,21 @@
                         const documentsList = document.getElementById('documents-list');
                         documentsList.innerHTML = '';
                         documents.forEach(doc => {
-                            const card = document.createElement('div');
-                            card.className = 'document-card';
-                            card.innerHTML = `
-                <h3>${doc.fileName}</h3>
-                <p>Size: ${formatFileSize(doc.fileSize)}</p>
-                <p>Type: ${doc.fileType}</p>
-                <div class="document-actions">
-                  <button class="view-btn" onclick="viewDocument('${doc._id}')">View Document</button>
-                  <button class="delete-btn" onclick="deleteDocument('${doc._id}')">Delete</button>
-                </div>
-              `;
-                            documentsList.appendChild(card);
-                        });
+                        const card = document.createElement('div');
+                        card.className = 'document-card';
+                        card.innerHTML = `
+                            <h3>${doc.fileName}</h3>
+                            <p>Size: ${formatFileSize(doc.fileSize)}</p>
+                            <p>Type: ${doc.fileType}</p>
+                            <div class="document-actions">
+                            <button class="view-btn" onclick="viewDocument('${doc._id}')">View Document</button>
+                            <button class="delete-btn" onclick="deleteDocument('${doc._id}')">Delete</button>
+                            ${doc.fileType === 'application/pdf' ? 
+                `<button class="analyze-btn" onclick="analyzeCompliance('${doc._id}')">Check Compliance</button>` : ''}
+        </div>
+    `;
+    documentsList.appendChild(card);
+});
                     })
                     .catch(error => {
                         console.error('Error:', error);
@@ -490,6 +603,210 @@
                 }
                 return fullText;
             }
+/*
+    async function analyzeCompliance(id) {
+    const token = localStorage.getItem('token');
+    
+    // Show loading indicator
+    const loadingMessage = document.createElement('div');
+    loadingMessage.innerHTML = '<div class="loading-spinner"></div> Analyzing document compliance...';
+    loadingMessage.className = 'success-message';
+    loadingMessage.style.display = 'block';
+    document.getElementById('error-message').replaceWith(loadingMessage);
+    
+    try {
+        const response = await fetch('http://localhost:5001/api/analyze-compliance', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ documentId: id })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to analyze document');
+        }
+        
+        const result = await response.json();
+        
+        // Create a modal to display results
+        const modalHtml = `
+            <div class="compliance-modal">
+                <div class="compliance-modal-content">
+                    <span class="close-modal">&times;</span>
+                    <h2>Compliance Analysis Results</h2>
+                    <div class="results-container">
+                        <div class="score-section">
+                            <h3>Domain: ${result.detected_domain.charAt(0).toUpperCase() + result.detected_domain.slice(1)}</h3>
+                            <div class="score-display">
+                                <div class="score-circle" style="--score: ${result.domain_score/10}">
+                                    <span>${result.domain_score}/10</span>
+                                </div>
+                                <p>Domain Score</p>
+                            </div>
+                            <div class="score-display">
+                                <div class="score-circle" style="--score: ${result.overall_score/10}">
+                                    <span>${result.overall_score}/10</span>
+                                </div>
+                                <p>Overall Score</p>
+                            </div>
+                        </div>
+                        <div class="categories-section">
+                            <div class="category-column">
+                                <h4>Matched Categories (Domain)</h4>
+                                <ul>${result.domain_matched.map(cat => `<li>${cat}</li>`).join('')}</ul>
+                            </div>
+                            <div class="category-column">
+                                <h4>Unmatched Categories (Domain)</h4>
+                                <ul>${result.domain_unmatched.map(cat => `<li>${cat}</li>`).join('')}</ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        // Add this line after receiving the results, before creating the modal
+        storeComplianceData(result);
+
+        // Add modal to the DOM
+        const modalElement = document.createElement('div');
+        modalElement.innerHTML = modalHtml;
+        document.body.appendChild(modalElement.firstChild);
+        
+        // Add event listener to close modal
+        document.querySelector('.close-modal').addEventListener('click', () => {
+            document.querySelector('.compliance-modal').remove();
+        });
+        
+        // Remove loading message
+        loadingMessage.remove();
+        
+    } catch (error) {
+        console.error('Error:', error);
+        loadingMessage.className = 'error-message';
+        loadingMessage.innerHTML = 'Error analyzing document: ' + error.message;
+    }
+}
+
+// Add a function to store compliance data for chat context
+            let complianceData = null;
+
+            function storeComplianceData(data) {
+                complianceData = data;
+                // Optionally notify the user
+                if (chatArea) {
+                    addMessage("Compliance analysis results are now available for chat context.", true);
+                }
+            }
+*/
+async function analyzeCompliance(id) {
+    const token = localStorage.getItem('token');
+    
+    // Show loading indicator
+    const loadingMessage = document.createElement('div');
+    loadingMessage.innerHTML = '<div class="loading-spinner"></div> Analyzing document compliance...';
+    loadingMessage.className = 'success-message';
+    loadingMessage.style.display = 'block';
+    document.getElementById('error-message').replaceWith(loadingMessage);
+    
+    try {
+        const response = await fetch('http://localhost:5001/api/analyze-compliance', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ documentId: id })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to analyze document');
+        }
+        
+        const result = await response.json();
+        
+        // Store compliance data for chat context
+        storeComplianceData(result);
+        
+        // Create a modal to display results
+        const modalHtml = `
+            <div class="compliance-modal">
+                <div class="compliance-modal-content">
+                    <span class="close-modal">&times;</span>
+                    <h2>Compliance Analysis Results</h2>
+                    <div class="results-container">
+                        <div class="score-section">
+                            <h3>Domain: ${result.detected_domain.charAt(0).toUpperCase() + result.detected_domain.slice(1)}</h3>
+                            <div class="score-display">
+                                <div class="score-circle" style="--score: ${result.domain_score/100}">
+                                    <span>${result.domain_score}/10</span>
+                                </div>
+                                <p>Domain Score</p>
+                            </div>
+                            <div class="score-display">
+                                <div class="score-circle" style="--score: ${result.overall_score/100}">
+                                    <span>${result.overall_score}/10</span>
+                                </div>
+                                <p>Overall Score</p>
+                            </div>
+                        </div>
+                        <div class="categories-section">
+                            <div class="category-column">
+                                <h4>Matched Categories (Domain)</h4>
+                                <ul>${result.domain_matched.map(cat => `<li>${cat}</li>`).join('')}</ul>
+                            </div>
+                            <div class="category-column">
+                                <h4>Unmatched Categories (Domain)</h4>
+                                <ul>${result.domain_unmatched.map(cat => `<li>${cat}</li>`).join('')}</ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Add modal to the DOM
+        const modalElement = document.createElement('div');
+        modalElement.innerHTML = modalHtml;
+        document.body.appendChild(modalElement.firstChild);
+        
+        // Add event listener to close modal
+        document.querySelector('.close-modal').addEventListener('click', () => {
+            document.querySelector('.compliance-modal').remove();
+        });
+        
+        // Update the compliance score in the UI if on index.html
+        updateComplianceScoreDisplay(result);
+        
+        // Remove loading message
+        loadingMessage.remove();
+        
+    } catch (error) {
+        console.error('Error:', error);
+        loadingMessage.className = 'error-message';
+        loadingMessage.innerHTML = 'Error analyzing document: ' + error.message;
+    }
+}
+
+// Function to store compliance data for chat context
+let complianceData = null;
+function storeComplianceData(data) {
+    complianceData = data;
+    // Optionally notify the user if chat is available
+    if (typeof addMessage === 'function' && document.getElementById('chat-area')) {
+        addMessage("Compliance analysis results are now available for chat context.", true);
+    }
+}
+
+// Function to update the compliance score display in the UI
+function updateComplianceScoreDisplay(result) {
+    // Check if we're on the index.html page with the compliance score element
+    const complianceScoreElement = document.getElementById('compliance-score');
+    if (complianceScoreElement) {
+        complianceScoreElement.textContent = `Compliance Score: ${result.domain_score}/100`;
+    }
+}
 
             function handleLogout() {
                 localStorage.removeItem('token');
