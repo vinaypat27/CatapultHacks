@@ -757,7 +757,6 @@
                 chatInput.value = '';
                 
                 let prompt = "User: " + message;
-                
                 // If we have compliance data, add it to the prompt
                 if (complianceData) {
                     prompt += "\nDocument compliance analysis: " + 
@@ -774,7 +773,23 @@
                 prompt += "\nProvide a helpful and context-aware response.";
                 
                 try {
-                    const response = await puter.ai.chat(prompt);
+
+                    const response = await puter.ai.chat(prompt, {model:"grok-beta"});
+                    if (message.toLowerCase().includes("pdf")) {
+                        const blob = new Blob([response], { type: 'text/plain' });
+                        const url = URL.createObjectURL(blob);
+
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'summary.txt';
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+
+                        return; 
+                    }
+
                     addMessage(response, true);
                 } catch (err) {
                     addMessage("Error processing your message: " + err, true);

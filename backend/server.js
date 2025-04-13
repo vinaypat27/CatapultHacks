@@ -13,7 +13,7 @@ const { spawn } = require('child_process');
 
 // Middleware
 app.use(cors());
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '1000mb' }));
 app.use(express.json());
 
 // Connect to MongoDB
