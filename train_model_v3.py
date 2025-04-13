@@ -13,7 +13,7 @@ df = pd.read_csv("/Users/parthranade/Documents/Hackathon/CUAD_v1/master_clauses.
 all_categories = [
     'GDPR', 'HIPAA', 'Insurance', 'Audit Rights', 'Cap On Liability',
     'Uncapped Liability', 'Indemnification', 'Termination For Convenience',
-    'Governing Law', 'Effective Date', 'Expiration Date', 'Confidentiality'
+    'Governing Law', 'Effective Date', 'Expiration Date', 'Confidentiality', 'SOX', 
 ]
 
 # Define keyword patterns for ALL categories
@@ -30,7 +30,7 @@ KEYWORD_PATTERNS = {
     'Effective Date': [r'\beffective date\b', r'start date'],
     'Expiration Date': [r'\bexpiration date\b', r'end date', r'termination date'],
     'Confidentiality': [r'\bconfidentiality\b', r'confidential information'],
-    
+
 }
 
 # Detect columns present in CSV

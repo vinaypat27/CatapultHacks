@@ -1,6 +1,19 @@
 import joblib
 import re
+import PyPDF2
 
+def extract_text_from_pdf(file_path):
+    text = ""
+    with open(file_path, "rb") as f:
+        reader = PyPDF2.PdfReader(f)
+        for page in reader.pages:
+            text += page.extract_text()
+    return text
+
+# Usage example:
+pdf_text = extract_text_from_pdf("/Users/parthranade/Documents/Hackathon/CUAD_v1/full_contract_pdf/Part_I/Affiliate_Agreements/CreditcardscomInc_20070810_S-1_EX-10.33_362297_EX-10.33_Affiliate Agreement.pdf")
+with open('sample_contract.txt', 'w') as file:
+    file.write(pdf_text)
 # Load everything
 model = joblib.load("compliance_model_v3.joblib")
 vectorizer = joblib.load("compliance_vectorizer_v3.joblib")
