@@ -259,7 +259,7 @@ app.post('/api/analyze-compliance', authenticateToken, async (req, res) => {
       require('fs').writeFileSync(tempFilePath, Buffer.from(document.content, 'base64'));
       
       // Call the Python script
-      const pythonProcess = spawn('python3', ['compliance_checker.py', tempFilePath]);
+const pythonProcess = spawn('python3', ['compliance_checker.py', tempFilePath]);
       
       let result = '';
       pythonProcess.stdout.on('data', (data) => {
