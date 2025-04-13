@@ -74,7 +74,7 @@ def predict_compliance(text):
 
 # Example usage
 if __name__ == "__main__":
-    pdf_text = extract_text_from_pdf("/Users/parthranade/Documents/Hackathon/CUAD_v1/full_contract_pdf/Part_I/Affiliate_Agreements/CreditcardscomInc_20070810_S-1_EX-10.33_362297_EX-10.33_Affiliate Agreement.pdf")
+    pdf_text = extract_text_from_pdf("/Users/parthranade/Documents/Hackathon/CUAD_v1/full_contract_pdf/Part_I/License_Agreements/AlliedEsportsEntertainmentInc_20190815_8-K_EX-10.19_11788293_EX-10.19_Content License Agreement.pdf")
     
     with open("sample_contract.txt", "w") as f:
         f.write(pdf_text)

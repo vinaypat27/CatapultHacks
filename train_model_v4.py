@@ -1,6 +1,7 @@
 import pandas as pd
 import joblib
 import re
+from collections import Counter
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
@@ -13,7 +14,7 @@ df = pd.read_csv("/Users/parthranade/Documents/Hackathon/CUAD_v1/master_clauses.
 answer_columns = [col for col in df.columns if col.endswith("-Answer")]
 all_categories = [col.replace("-Answer", "") for col in answer_columns]
 
-# Define keyword patterns for all categories you want to fall back on
+# Define keyword patterns for all categories (including fallback-only ones)
 KEYWORD_PATTERNS = {
     'GDPR': [r'\bGDPR\b', r'General Data Protection Regulation'],
     'HIPAA': [r'\bHIPAA\b', r'Health Insurance Portability and Accountability Act'],
@@ -29,11 +30,16 @@ KEYWORD_PATTERNS = {
     'Insurance': [r'\binsurance\b', r'coverage', r'certificate of insurance'],
     'Non-Disparagement': [r'\bnon-disparagement\b', r'disparage'],
     'Source Code Escrow': [r'\bsource code escrow\b', r'\bescrow\b'],
-    # Add more categories here as needed...
+    'NDA': [r'\bNDA\b', r'non-disclosure agreement', r'non-disclosure'],
+    'License': [r'\blicense\b', r'license agreement', r'licensee'],
+    'Intellectual Property Rights': [r'\bintellectual property rights\b', r'intellectual property'],
+    'Reservation of Rights': [r'\breservation of rights\b', r'reservation of rights']
 }
 
-# Get labeled training data from the columns
+# Build training data
 data = []
+
+# A. Supervised labeled examples
 for _, row in df.iterrows():
     for cat in all_categories:
         clause_text = str(row.get(cat)).strip()
@@ -44,46 +50,54 @@ for _, row in df.iterrows():
             elif answer == 'no':
                 data.append((clause_text, 'Non-Compliant'))  # Negative
 
-# Add extra training data for categories that might not have explicit columns
+# B. Weak supervision for fallback categories
 existing_labelled = set(all_categories)
 fallback_cats = [cat for cat in KEYWORD_PATTERNS if cat not in existing_labelled]
 
 for _, row in df.iterrows():
     all_text = " ".join([str(val) for val in row if isinstance(val, str)])
     for cat in fallback_cats:
-        for pattern in KEYWORD_PATTERNS[cat]:
-            if re.search(pattern, all_text, re.IGNORECASE):
-                data.append((all_text, cat))
-                break  # Only add once per category
+        patterns = KEYWORD_PATTERNS[cat]
+        if any(re.search(pat, all_text, re.IGNORECASE) for pat in patterns):
+            data.append((all_text, cat))
+        else:
+            data.append((all_text, 'Non-Compliant'))
 
-# Clean and prep final DataFrame
+# Build DataFrame and clean
 clause_df = pd.DataFrame(data, columns=['text', 'label'])
-clause_df = clause_df[clause_df['text'].str.len() > 20]  # Remove junk/short lines
+clause_df = clause_df[clause_df['text'].str.len() > 20]
+
+# Filter classes with less than 2 samples
+label_counts = Counter(clause_df['label'])
+valid_labels = {label for label, count in label_counts.items() if count >= 2}
+clause_df = clause_df[clause_df['label'].isin(valid_labels)]
 
 print(f"✅ Total training samples: {len(clause_df)}")
-print(f"📦 Categories: {sorted(set(clause_df['label']))}")
+print(f"📦 Categories: {sorted(valid_labels)}")
 
 # Vectorization
 vectorizer = TfidfVectorizer(max_features=5000, stop_words='english')
 X = vectorizer.fit_transform(clause_df['text'])
 y = clause_df['label']
 
-# Train/Test split
-X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=0.2, random_state=42)
+# Train/Test split with fix
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, stratify=y, test_size=0.2, random_state=42
+)
 
-# Model Training
+# Train model
 model = LogisticRegression(max_iter=1000)
 model.fit(X_train, y_train)
 
-# Evaluation
+# Evaluate
 y_pred = model.predict(X_test)
 print("\n📊 Evaluation Report:\n")
 print(classification_report(y_test, y_pred))
 
-# Save all components
+# Save everything
 joblib.dump(model, "compliance_model_v3.joblib")
 joblib.dump(vectorizer, "compliance_vectorizer_v3.joblib")
-joblib.dump(all_categories + fallback_cats, "compliance_categories_v3.joblib")
+joblib.dump(sorted(list(valid_labels)), "compliance_categories_v3.joblib")
 joblib.dump(KEYWORD_PATTERNS, "keyword_patterns_v3.joblib")
 
 print("Model, vectorizer, categories, and keyword patterns saved.")

@@ -1,6 +1,7 @@
 import pandas as pd
 import joblib
 import re
+from collections import Counter
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
@@ -13,7 +14,7 @@ df = pd.read_csv("/Users/parthranade/Documents/Hackathon/CUAD_v1/master_clauses.
 all_categories = [
     'GDPR', 'HIPAA', 'Insurance', 'Audit Rights', 'Cap On Liability',
     'Uncapped Liability', 'Indemnification', 'Termination For Convenience',
-    'Governing Law', 'Effective Date', 'Expiration Date', 'Confidentiality', 'SOX', 
+    'Governing Law', 'Effective Date', 'Expiration Date', 'Confidentiality', 'SOX', 'License', 'NDA', 'Intellectual Property Rights', 'Reservation of Rights'
 ]
 
 # Define keyword patterns for ALL categories
@@ -30,7 +31,10 @@ KEYWORD_PATTERNS = {
     'Effective Date': [r'\beffective date\b', r'start date'],
     'Expiration Date': [r'\bexpiration date\b', r'end date', r'termination date'],
     'Confidentiality': [r'\bconfidentiality\b', r'confidential information'],
-
+    'License': [r'\blicense\b', r'license agreement', r'licensee', r'intellectual property rights', r'reservation of rights'],
+    'NDA': [r'\bNDA\b', r'non-disclosure agreement', r'non-disclosure'],
+    'Intellectual Property Rights': [r'\bintellectual property rights\b', r'intellectual property'],
+    'Reservation of Rights': [r'\breservation of rights\b', r'reservation of rights']
 }
 
 # Detect columns present in CSV
@@ -66,28 +70,41 @@ for _, row in df.iterrows():
             data.append((text_block, 'Non-Compliant'))  # weak negative
 
 # -------------------------------
-# 2. Train model
+# 2. Prepare dataset
 # -------------------------------
 clause_df = pd.DataFrame(data, columns=['text', 'label'])
-clause_df = clause_df[clause_df['text'].str.len() > 20]  # filter short
+clause_df = clause_df[clause_df['text'].str.len() > 20]  # filter out very short entries
 
-print(f"✅ Training on {len(clause_df)} total examples.")
+# Filter out classes with fewer than 2 samples
+label_counts = Counter(clause_df['label'])
+valid_labels = {label for label, count in label_counts.items() if count >= 2}
+clause_df = clause_df[clause_df['label'].isin(valid_labels)]
 
+print(f"✅ Training on {len(clause_df)} total examples across {len(valid_labels)} classes.")
+
+# -------------------------------
+# 3. Train model
+# -------------------------------
 vectorizer = TfidfVectorizer(max_features=5000, stop_words='english')
 X = vectorizer.fit_transform(clause_df['text'])
 y = clause_df['label']
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, stratify=y, test_size=0.2, random_state=42
+)
 
 model = LogisticRegression(max_iter=1000)
 model.fit(X_train, y_train)
 
-# Evaluate
+# -------------------------------
+# 4. Evaluate and Save
+# -------------------------------
 y_pred = model.predict(X_test)
+
 print("\n📊 Evaluation Report:\n")
 print(classification_report(y_test, y_pred))
 
-# Save
+# Save model artifacts
 joblib.dump(model, "compliance_model_v3.joblib")
 joblib.dump(vectorizer, "compliance_vectorizer_v3.joblib")
 joblib.dump(all_categories, "compliance_categories_v3.joblib")
