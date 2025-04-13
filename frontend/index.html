@@ -577,7 +577,17 @@
             function addMessage(message, isAi = false) {
                 const messageDiv = document.createElement('div');
                 messageDiv.className = `message ${isAi ? 'ai-message' : 'user-message'}`;
-                messageDiv.textContent = message;
+                const formatted = String(message || '')
+                if (isAi) {
+                  const formatted = String(message || '')
+                    .trim()
+                    .replace(/(?:\n\s*){2,}/g, '\n\n') // normalize double spacing
+                    .replace(/^\s*[-*•]\s/gm, '• ')    // normalize bullets
+                    .replace(/\n/g, '<br>');           // convert newlines to HTML line breaks
+                  messageDiv.innerHTML = formatted;
+                } else {
+                    messageDiv.textContent = String(message || '');
+                }
                 chatArea.appendChild(messageDiv);
                 chatArea.scrollTop = chatArea.scrollHeight;
             }
